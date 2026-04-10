@@ -125,6 +125,43 @@ textarea.fi2{min-height:60px;resize:vertical}
 </style>
 </head>
 <body>
+<script>
+(function(){
+  const HASH='7c59894710a3c1a8784fbf2ab0af5dac791b07607937811cc1e8221a7e94de81';
+  const SKEY='_samus_auth';
+  if(sessionStorage.getItem(SKEY)==='1') return;
+  document.documentElement.style.visibility='hidden';
+  async function sha256(m){const d=new TextEncoder().encode(m);const h=await crypto.subtle.digest('SHA-256',d);return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('')}
+  window.addEventListener('DOMContentLoaded',async function(){
+    document.documentElement.style.visibility='hidden';
+    const ov=document.createElement('div');
+    ov.id='_auth_overlay';
+    ov.innerHTML=`
+      <div style="position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#1a3a5c,#2d5986);z-index:99999;display:flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif">
+        <div style="background:white;border-radius:16px;padding:40px;width:340px;box-shadow:0 8px 32px rgba(0,0,0,0.3);text-align:center">
+          <div style="font-size:36px;margin-bottom:12px">🏛</div>
+          <h2 style="font-family:'Crimson Pro',serif;color:#1a3a5c;margin-bottom:4px;font-size:20px">RL Samus 488 SM</h2>
+          <p style="color:#8a9aaa;font-size:12px;margin-bottom:24px">Acces restricționat · Introduceți parola</p>
+          <input type="password" id="_auth_pw" placeholder="Parola" style="width:100%;padding:12px 16px;border:2px solid #e8f0f8;border-radius:8px;font-size:15px;outline:none;margin-bottom:12px;font-family:inherit" autofocus>
+          <div id="_auth_err" style="color:#9B2335;font-size:13px;margin-bottom:12px;display:none">Parolă incorectă</div>
+          <button id="_auth_btn" style="width:100%;padding:12px;background:#1a3a5c;color:white;border:none;border-radius:8px;font-size:15px;cursor:pointer;font-family:inherit;font-weight:500">Autentificare</button>
+        </div>
+      </div>`;
+    document.body.prepend(ov);
+    document.documentElement.style.visibility='visible';
+    const pw=document.getElementById('_auth_pw');
+    const btn=document.getElementById('_auth_btn');
+    const err=document.getElementById('_auth_err');
+    async function tryLogin(){
+      const h=await sha256(pw.value);
+      if(h===HASH){sessionStorage.setItem(SKEY,'1');ov.remove();document.documentElement.style.visibility='visible'}
+      else{err.style.display='block';pw.value='';pw.focus()}
+    }
+    btn.addEventListener('click',tryLogin);
+    pw.addEventListener('keydown',function(e){if(e.key==='Enter')tryLogin()});
+  });
+})();
+</script>
 <div id="print-area"></div>
 
 <div class="layout">
